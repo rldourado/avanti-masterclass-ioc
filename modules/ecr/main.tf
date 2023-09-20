@@ -12,8 +12,7 @@ resource "aws_ecr_lifecycle_policy" "avanti-masterclass-app-policy" {
             "rulePriority": 1,
             "description": "Keep last 3 images",
             "selection": {
-                "tagStatus": "tagged",
-                "tagPrefixList": ["v"],
+                "tagStatus": "any",
                 "countType": "imageCountMoreThan",
                 "countNumber": 3
             },
