@@ -29,17 +29,17 @@ variable "kubernetes_version" {
 variable "desired_size" {
   description = "EKS Cluster Nodes Count"
   type        = number
-  default     = 2
+  default     = 1
 }
 
 variable "min_size" {
   description = "EKS Cluster Minimum Node Count"
   type        = number
-  default     = 2
+  default     = 1
 }
 
 variable "max_size" {
   description = "EKS Cluster Maximum Node Count"
   type        = number
-  default     = 4
+  default     = 2
 }

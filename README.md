@@ -73,3 +73,63 @@ $ terraform logout
 ```
 
 <br />
+
+### EKS Config
+
+```(bash)
+$ aws eks update-kubeconfig --region sa-east-1 --name eks-avanti-masterclass
+$ kubectl get svc
+$ kubectl -n kube-system edit configmap aws-auth
+```
+
+```
+  mapUsers: |
+    - groups:
+      - system:masters
+      userarn: arn:aws:iam::111122223333:user/admin
+      username: admin
+```
+
+### Rancher
+
+```(bash)
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+helm search repo ingress-nginx -l
+
+helm upgrade --install \
+  ingress-nginx ingress-nginx/ingress-nginx \
+  --namespace ingress-nginx \
+  --set controller.service.type=LoadBalancer \
+  --version 4.7.2 \
+  --create-namespace
+
+kubectl get service ingress-nginx-controller --namespace=ingress-nginx
+
+# Get External-IP Address
+
+helm repo add rancher-stable https://releases.rancher.com/server-charts/stable
+
+kubectl create namespace cattle-system
+
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.11.0/cert-manager.crds.yaml
+helm repo add jetstack https://charts.jetstack.io
+helm repo update
+helm install cert-manager jetstack/cert-manager \
+  --namespace cert-manager \
+  --create-namespace \
+  --version v1.11.0
+
+helm install rancher rancher-stable/rancher \
+  --namespace cattle-system \
+  --set hostname=k8s.stwconsult.tec.br \
+  --set bootstrapPassword=admin \
+  --set ingress.tls.source=letsEncrypt \
+  --set letsEncrypt.email=me@example.org \
+  --set letsEncrypt.ingress.class=nginx \
+  --set ingress.ingressClassName=nginx
+
+kubectl -n cattle-system rollout status deploy/rancher
+
+kubectl -n cattle-system get deploy rancher
+```
